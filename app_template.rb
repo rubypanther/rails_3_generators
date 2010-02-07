@@ -1,3 +1,6 @@
+#
+# (C) 2010 Paris Sinclair <paris@rubypanther.com>
+# Need to decide on an OSS license for this. Maybe MIT?
 interactive         = yes?("interactive? [y/N]")
 root                = File.expand_path('.')
 docroot             = File.join( root, 'public' )
