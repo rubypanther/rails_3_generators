@@ -1,0 +1,21 @@
+Rails 3 Generators
+  by RubyPanther
+
+These generators are opinionated. My purpose is not to make generators that make everybody else happy, but to make generators for my own purposes, and to share them for use by people with the same technology preferences.
+
+Right now there is just the interactive app template.
+
+App Template Usage:
+  rails appname -m rails_3_generators/app_template.rp
+
+It will prompt you for interactive mode, just hit enter to accept all my recommended defaults. You do want the best choices, right?! :P
+
+Please note that as of this writing, the Gemfile that is generated will be broken due to a bug in the Rails generator. One problem is a lack of newlines between gem commands. Another problem is that the version strings don't get quoted. These are easy fixes and I know there is a 2 byte patch in the Rails ticket system for it, so it may be fixed by the time you read this. If so drop me a message on github so I can remove this text.
+
+Some key opinions:
+* Apache is a great web server, and Passenger is to Ruby what mod_perl is to Perl. I have no intention of supporting other webservers or middleware with these templates. Though I may include options for other Rack apps, if I find myself using any more than once.
+* Configs should live in the app dir, and be symlinked in other places, not spread around in apache dirs and wherever.
+* Defaults will always be whatever is standard on a Fedora Linux system, where applicable.
+* Most things will be named "normally" but some things will be named in a fun way.
+* Term::ANSIColor in the logs is fun!
+* Attention all netslaves! Tests suck, nobody tests anymore. Quit wasting time and get back to work.
