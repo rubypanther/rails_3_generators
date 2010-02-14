@@ -43,7 +43,7 @@ plugin 'restful-authentication', :git => 'git://github.com/technoweenie/restful-
                gem 'sqlite3'
                'sqlite3'
              else
-               gem 'pg', '0.8.0' rescue gem 'pg'
+               gem 'pg', '>= 0.8.0' rescue gem 'pg'
                'postgresql'
              end
 
