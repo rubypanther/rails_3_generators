@@ -11,7 +11,12 @@ apache_conf_symlink = File.join '/etc/httpd/conf.d', "#{@app_name}.conf"
 apache_conf         = File.join(root, 'config/apache/development.conf')
 
 # run 'gem bundle'
-add_source 'http://gems.github.com'
+gem_options = {}
+begin
+  add_source 'http://gems.github.com'
+rescue
+  gem_options = { :source => 'http://gems.github.com' }
+end
 
 unless interactive and not no?("Use Term::ANSIColor to colorize strings? (for use in logging) [Y/n]")
   gem 'term-ansicolor',       :require => 'term/ansicolor'
@@ -25,7 +30,7 @@ MONKEY
 end
 
 
-gem 'mislav-will_paginate', :require => 'will_paginate'
+gem 'mislav-will_paginate', { :require => 'will_paginate' }.merge(gem_options)
 plugin 'exception_notifier',     :git => 'git://github.com/rails/exception_notification.git'
 plugin 'restful-authentication', :git => 'git://github.com/technoweenie/restful-authentication.git'
 
@@ -38,7 +43,7 @@ plugin 'restful-authentication', :git => 'git://github.com/technoweenie/restful-
                gem 'sqlite3'
                'sqlite3'
              else
-               gem 'pg', '>= 0.8.0'
+               gem 'pg', '0.8.0' rescue gem 'pg'
                'postgresql'
              end
 
@@ -80,7 +85,7 @@ file 'app/views/layouts/application.html.erb', <<-LAYOUT
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-<title>#{@app_name.capitalize}</title>
+<title>#{@app_name.capitalize rescue @app_name}</title>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 <%= stylesheet_link_tag 'application' %>
 </head>
