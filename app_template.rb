@@ -6,22 +6,29 @@ root                = File.expand_path('.')
 docroot             = File.join( root, 'public' )
 static_location     = '/static'
 vhost_address       = '*:80'
-server_name         = "#{@app_name}.localdomain"
+server_name         = @app_name
 apache_conf_symlink = File.join '/etc/httpd/conf.d', "#{@app_name}.conf"
 apache_conf         = File.join(root, 'config/apache/development.conf')
+rvm_ruby            = 'rvm 1.9.2'
+rvm_gemset          = 'rails3'
 
 # run 'gem bundle'
-gem_options = {}
 begin
-  add_source 'http://gems.github.com'
+  add_source "http://gems.github.com"
+  gem_options = {}
+  require_key = :require
+  rails_2_compat = false
 rescue
   gem_options = { :source => 'http://gems.github.com' }
+  require_key = :lib
+  rails_2_compat = true
 end
 
 unless interactive and not no?("Use Term::ANSIColor to colorize strings? (for use in logging) [Y/n]")
-  gem 'term-ansicolor',       :require => 'term/ansicolor'
+  gem 'term-ansicolor',       require_key => 'term/ansicolor'
 
-  initializer "monkey", <<-MONKEY
+  initializer "monkey.rb", ERB.new(<<MONKEY, nil, '<>').result(binding)
+# 
 # So that we can use colors in the log easily
 class String
   include Term::ANSIColor
@@ -29,10 +36,12 @@ end
 MONKEY
 end
 
-
-gem 'mislav-will_paginate', { :require => 'will_paginate' }.merge(gem_options)
+gem 'will_paginate', '3.0.pre'
+#gem 'mislav-will_paginate', { require_key => 'will_paginate' }.merge(gem_options)
 plugin 'exception_notifier',     :git => 'git://github.com/rails/exception_notification.git'
-plugin 'restful-authentication', :git => 'git://github.com/technoweenie/restful-authentication.git'
+#plugin 'restful-authentication', :git => 'git://github.com/technoweenie/restful-authentication.git'
+gem "authlogic", :git => 'git://github.com/odorcicd/authlogic.git', :branch => "rails3" 
+#gem 'authlogic', gem_options
 
 @db_server = case interactive ? ask("Which database server? [P]ostgresql, [m]ysql, [s]qlite3") : 'postgresql'
              when /^m/i
@@ -65,7 +74,7 @@ file 'config/database.yml', ERB.new(<<-ERB,nil,'<>').result(binding)
 <%= environment %>:
   adapter: <%= @db_server %>
   encoding: utf8
-  database: <%= @app_name %>_<%= environment %>
+  database: <%= @app_name.gsub(/[^a-zA-Z0-9_]/,'_') %>_<%= environment %>
   username: <%= @db_user %>
   password: <%= @db_password %>
 <% if @db_server == 'mysql' %>
@@ -123,14 +132,20 @@ end
 
 if @apache
   unless interactive and not no?("symlink config/apache.conf to #{apache_conf_symlink}? [Y/n]")
-    run "sudo ln -s #{apache_conf} #{apache_conf_symlink}"
+    run "sudo ln -f -s #{apache_conf} #{apache_conf_symlink}"
   end
+end
+
+rvmrc_string = "#{rvm_ruby}@#{rvm_gemset}"
+unless interactive and not no?( "create .rvmrc for #{rvmrc_string}? [Y/n]" )
+  file '.rvmrc', rvmrc_string
 end
 
 run "bundle install"
 
 git :init
-git :add => ".", :commit => "-m 'initial commit.'"
+git :add => "."
+git :commit => "-m 'initial commit.'"
 
 unless no?( "run rake db:create:all to create databases? [Y/n]" )
   run "rake db:create:all"
