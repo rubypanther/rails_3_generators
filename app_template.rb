@@ -9,7 +9,7 @@ vhost_address       = '*:80'
 server_name         = @app_name
 apache_conf_symlink = File.join '/etc/httpd/conf.d', "#{@app_name}.conf"
 apache_conf         = File.join(root, 'config/apache/development.conf')
-rvm_ruby            = 'rvm 1.9.2'
+rvm_ruby            = 'rvm 1.9.2-p180'
 rvm_gemset          = 'rails3'
 
 # run 'gem bundle'
@@ -36,7 +36,7 @@ end
 MONKEY
 end
 
-gem 'will_paginate', '3.0.pre'
+gem 'will_paginate', '3.0.pre2'
 #gem 'mislav-will_paginate', { require_key => 'will_paginate' }.merge(gem_options)
 plugin 'exception_notifier',     :git => 'git://github.com/rails/exception_notification.git'
 #plugin 'restful-authentication', :git => 'git://github.com/technoweenie/restful-authentication.git'
